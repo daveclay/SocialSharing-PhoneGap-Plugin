@@ -5,6 +5,7 @@
 #import <MessageUI/MFMessageComposeViewController.h>
 #import <MessageUI/MFMailComposeViewController.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+#import <GooglePlus/GooglePlus.h>
 
 @implementation SocialSharing {
   UIPopoverController *_popover;
@@ -422,6 +423,23 @@
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
   }
+}
+
+- (void)shareViaGooglePlus:(CDVInvokedUrlCommand *)command {
+    NSString *title   = [command.arguments objectAtIndex:0];
+    NSString *message   = [command.arguments objectAtIndex:1];
+    NSString *urlString = [command.arguments objectAtIndex:2];
+    NSString *comicDeepLink = [command.arguments objectAtIndex:3];
+    
+    id<GPPNativeShareBuilder> shareBuilder = [[GPPShare sharedInstance] nativeShareDialog];
+    [shareBuilder setTitle:title
+               description:message
+              thumbnailURL:[NSURL URLWithString:urlString]];
+    [shareBuilder setContentDeepLinkID:comicDeepLink];
+    [shareBuilder open];
+    
+    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 -(UIImage*)getImage: (NSString *)imageName {
